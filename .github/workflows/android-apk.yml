@@ -56,14 +56,14 @@ jobs:
           SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
         run: python3 scripts/prepare_config.py
 
-      - name: Analyze, test and build debug APK
+      - name: Analyze, test and build release APK
         run: bash scripts/build_android.sh
 
-      - name: Upload installable test APK
+      - name: Upload installable release APK
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: Reverie-Android-Debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: Reverie-Android-Release
+          path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 14
           compression-level: 0

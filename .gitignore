@@ -17,3 +17,5 @@ config.json
 *.apk
 download_*.ps1
 resume_*.ps1
+supabase*.exe
+supabase/.temp/

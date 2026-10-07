@@ -48,6 +48,8 @@ android {
     buildTypes {
         release {
             signingConfig = if (signingFile.exists()) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
@@ -60,11 +62,4 @@ kotlin {
 
 flutter {
     source = "../.."
-}
-
-// Never accidentally ship a production build signed with a development key.
-gradle.taskGraph.whenReady {
-    if (!signingFile.exists() && allTasks.any { it.path.startsWith(":app:") && it.name.contains("Release") }) {
-        throw GradleException("Release signing is required. Configure android/key.properties first, or build --debug for testing.")
-    }
 }

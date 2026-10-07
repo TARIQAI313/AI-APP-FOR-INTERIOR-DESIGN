@@ -12,5 +12,5 @@ test -f config.json || { echo 'Copy config.example.json to config.json and enter
 flutter pub get
 flutter analyze
 flutter test
-flutter build apk --debug --dart-define-from-file=config.json
-echo 'Built: build/app/outputs/flutter-apk/app-debug.apk'
+flutter build apk --release --dart-define-from-file=config.json
+echo 'Built: build/app/outputs/flutter-apk/app-release.apk'
