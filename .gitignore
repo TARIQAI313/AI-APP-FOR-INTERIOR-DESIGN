@@ -14,3 +14,6 @@ android/key.properties
 !.env.example
 config.json
 *.log
+*.apk
+download_*.ps1
+resume_*.ps1

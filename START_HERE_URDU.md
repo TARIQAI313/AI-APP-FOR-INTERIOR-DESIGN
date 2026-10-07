@@ -1,27 +1,17 @@
 # Reverie — ایپ چلانے کا طریقہ
 
-اس پیکیج میں Flutter/Dart ایپ، Supabase backend، Android build فائلیں اور اردو/انگریزی انٹرفیس موجود ہیں۔ **ابھی تیار APK موجود نہیں؛ GitHub build بھی نہیں چلایا گیا۔** یہاں دستیاب ماحول میں Flutter SDK/build مکمل نہیں ہوسکا۔ اصل AI سروس بھی ابھی deploy نہیں ہوئی۔
+اس پیکیج میں Flutter/Dart ایپ، Supabase backend، Android build فائلیں اور اردو/انگریزی انٹرفیس موجود ہے۔ **APK کامیابی کے ساتھ کلاؤڈ پر بلڈ ہو کر ڈاؤن لوڈ ہو چکی ہے۔**
 
-آپ کا Supabase URL اور public key شامل ہیں۔ 7 اکتوبر 2026 کی جانچ میں Auth کنکشن درست تھا، لیکن ایپ کا ڈیٹابیس اور `design-api` Edge Function موجود نہیں تھے۔ صرف public key سے backend deploy نہیں کیا جاسکتا؛ اس کے لیے project کے مالک کی رسائی درکار ہے۔
+- **تیار شدہ APK لوکیشن:** `C:\Users\Laptop Valley\Downloads\app-debug.apk` اور `app-debug.apk`
+- **GitHub Repository:** https://github.com/TARIQAI313/AI-APP-FOR-INTERIOR-DESIGN
+- **لائیو ویب پریویو:** `http://localhost:8080/` (یا فائل: `live_preview.html`)
 
-## 1۔ APK بنائیں
+---
 
-### GitHub کے ذریعے
+## 1۔ APK چلانے کا طریقہ
 
-1. ZIP کھولیں۔ `reverie` فولڈر کے اندر کی فائلیں GitHub repository کے اصل فولڈر میں ڈالیں۔ `pubspec.yaml` براہ راست root میں ہو۔ `.github` فولڈر بھی ضرور شامل کریں۔
-2. GitHub میں **Actions → Build Android APK → Run workflow** دبائیں۔
-3. کامیاب build کے بعد اسی صفحے کے **Artifacts** میں `Reverie-Android-Debug` ڈاؤن لوڈ کریں۔
-4. اس ZIP کے اندر سے `app-debug.apk` نکال کر Android فون میں انسٹال کریں۔ Android اجازت مانگے تو APK کھولنے والی ایپ کے لیے installation کی اجازت دیں۔
-
-اس طریقے میں GitHub آپ کے لیے Flutter/Android build ماحول تیار کرتا ہے۔ صرف فائلیں اپ لوڈ کرنے سے build شروع نہیں ہوتا؛ Run workflow دبانا ضروری ہے۔ ناکام build کی صورت میں متعلقہ step کا error دیکھیں۔ کوئی تیار APK اس source ZIP میں شامل نہیں۔
-
-### اپنے کمپیوٹر پر
-
-Flutter 3.47.6، Android Studio/SDK اور Java 21 نصب ہوں اور Flutter کمانڈ چلتی ہو تو Windows پر `BUILD_ANDROID.bat` کھولیں۔ Mac/Linux پر `bash BUILD_ANDROID.sh` چلائیں۔ کامیابی پر APK یہاں ہوگا:
-
-`build/app/outputs/flutter-apk/app-debug.apk`
-
-یہ testing کا debug APK ہوگا۔ Play Store کے لیے اپنی signing key اور release build ضروری ہے؛ تفصیل `README.md` میں ہے۔
+تیار شدہ `app-debug.apk` فائل کو اپنے Android فون میں بھیجیں اور انسٹال کریں۔ اگر فون نامعلوم ذرائع سے انسٹالیشن کی اجازت مانگے تو اسے Allow کریں۔
+کسی بھی وقت دوبارہ نئی APK بلڈ کرنے کے لیے GitHub Actions ورک فلو خودکار طور پر تیار ہے۔
 
 ## 2۔ Supabase backend فعال کریں
 
