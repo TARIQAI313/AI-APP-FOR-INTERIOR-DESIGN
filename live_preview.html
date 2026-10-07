@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl" id="root-html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reverie — Live Studio Preview</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #263c32;
+      --paper: #f5f0e7;
+      --card-bg: #fcfaf6;
+      --brass: #a57c42;
+      --muted: #706e64;
+      --border-color: #ddd7cb;
+    }
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    .serif-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+    }
+    .urdu-font {
+      font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Manrope', sans-serif;
+    }
+    /* Mobile frame styling */
+    .phone-container {
+      max-width: 460px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--paper);
+      box-shadow: 0 25px 50px -12px rgba(38, 60, 50, 0.15);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    /* Pulse pin animation */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(165, 124, 66, 0.6); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(165, 124, 66, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(165, 124, 66, 0); }
+    }
+    .pin-active {
+      animation: pulse-ring 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+<div class="phone-container border-x border-[#ddd7cb]">
+  
+  <!-- Top App Bar -->
+  <header class="sticky top-0 z-40 bg-[#f5f0e7]/95 backdrop-blur-md px-5 py-3 border-b border-[#ddd7cb] flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-xl bg-[#263c32] flex items-center justify-center text-[#f5f0e7] shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <span class="serif-title text-2xl font-bold tracking-tight text-[#263c32]">reverie.</span>
+      <span class="text-[11px] px-2 py-0.5 rounded-full bg-[#a57c42]/15 text-[#a57c42] font-semibold tracking-wider">LIVE</span>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Language Button -->
+      <button id="lang-btn" onclick="toggleLanguage()" class="px-3 py-1.5 rounded-xl border border-[#ddd7cb] bg-white/70 hover:bg-white text-xs font-semibold text-[#263c32] transition flex items-center gap-1.5 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-[#a57c42]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+        </svg>
+        <span id="lang-label">English</span>
+      </button>
+
+      <!-- Account Button -->
+      <button onclick="openModal('account-modal')" class="w-9 h-9 rounded-xl border border-[#ddd7cb] bg-white/70 hover:bg-white flex items-center justify-center text-[#263c32] transition shadow-sm" title="Account">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 px-5 py-4 pb-24 overflow-y-auto">
+    
+    <!-- TAB 1: STUDIO (Home) -->
+    <div id="tab-studio" class="space-y-6">
+      
+      <!-- Hero Banner -->
+      <div class="pt-2">
+        <p class="text-xs uppercase tracking-[0.2em] font-bold text-[#a57c42] mb-2" data-key="studio_subtitle">
+          انٹیریئر ڈیزائن اسٹوڈیو
+        </p>
+        <h1 class="serif-title text-4xl leading-tight font-medium text-[#263c32]" data-key="studio_title">
+          اپنی جگہ کو<br><span class="italic text-[#a57c42]">نیا روپ دیں۔</span>
+        </h1>
+        <p class="text-sm text-[#706e64] mt-2 leading-relaxed" data-key="studio_desc">
+          آپ کے کمرے کی تصویر سے، جدید AI کے ذریعے حقیقت پسندانہ خوبصورت ڈیزائن۔
+        </p>
+      </div>
+
+      <!-- Quick Action Cards -->
+      <div class="bg-[#263c32] text-[#f5f0e7] rounded-3xl p-5 shadow-lg relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-[#a57c42]/20 rounded-full blur-2xl"></div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#f5f0e7]/10 text-xs font-medium text-[#f5f0e7]/90">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span data-key="ai_model_tag">Gemini 3.1 Flash Image</span>
+          </div>
+          <span class="text-xs text-[#f5f0e7]/70 font-mono">v1.0.0</span>
+        </div>
+        
+        <h3 class="serif-title text-2xl font-normal mb-2" data-key="cta_heading">نیا ڈیزائن بنائیں</h3>
+        <p class="text-xs text-[#f5f0e7]/80 leading-relaxed mb-5" data-key="cta_sub">
+          تصویر اپ لوڈ کریں، پسندیدہ اسٹائل منتخب کریں اور پلک جھپکتے ہی خریداری کے لنکس حاصل کریں۔
+        </p>
+
+        <button onclick="openNewRoomModal()" class="w-full py-3.5 px-4 rounded-2xl bg-[#a57c42] hover:bg-[#8f6834] text-white font-semibold text-sm transition flex items-center justify-center gap-2 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <span data-key="reimagine_btn">میرے کمرے کا ڈیزائن بنائیں</span>
+        </button>
+      </div>
+
+      <!-- Process Steps -->
+      <div class="grid grid-cols-3 gap-2 text-center py-1">
+        <div class="p-3 bg-white/60 border border-[#ddd7cb] rounded-2xl">
+          <div class="text-base font-bold text-[#a57c42] mb-0.5">01</div>
+          <div class="text-xs font-semibold text-[#263c32]" data-key="step_1">تصویر دیں</div>
+        </div>
+        <div class="p-3 bg-white/60 border border-[#ddd7cb] rounded-2xl">
+          <div class="text-base font-bold text-[#a57c42] mb-0.5">02</div>
+          <div class="text-xs font-semibold text-[#263c32]" data-key="step_2">انداز چنیں</div>
+        </div>
+        <div class="p-3 bg-white/60 border border-[#ddd7cb] rounded-2xl">
+          <div class="text-base font-bold text-[#a57c42] mb-0.5">03</div>
+          <div class="text-xs font-semibold text-[#263c32]" data-key="step_3">خریداری کریں</div>
+        </div>
+      </div>
+
+      <!-- Recent Transformations Showcase -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="serif-title text-xl text-[#263c32]" data-key="recent_designs_title">حالیہ ڈیزائنز (ڈیمو)</h2>
+          <span class="text-xs text-[#a57c42] font-semibold cursor-pointer" onclick="switchTab('rooms')">تمام دیکھیں &larr;</span>
+        </div>
+
+        <!-- Room 1 Showcase Card -->
+        <div class="bg-[#fcfaf6] border border-[#ddd7cb] rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition">
+          <div class="relative h-56 bg-slate-200 cursor-pointer" onclick="viewRoomDetail('room-1')">
+            <img id="demo-room-img" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80" alt="Living Room Redesign" class="w-full h-full object-cover">
+            
+            <div class="absolute top-3 left-3 bg-[#263c32]/85 text-[#f5f0e7] text-xs px-3 py-1 rounded-full backdrop-blur-sm flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span data-key="status_ready">تیار ہے</span>
+            </div>
+
+            <div class="absolute bottom-3 right-3 bg-white/90 text-[#263c32] text-[11px] font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm shadow">
+              4 Hotspots 📍
+            </div>
+          </div>
+          <div class="p-4 flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-sm text-[#263c32]">لیونگ روم — Modern Vintage</h4>
+              <p class="text-xs text-[#706e64] mt-0.5">کراچی، پاکستان • 4 فرنیچر آئٹمز</p>
+            </div>
+            <button onclick="viewRoomDetail('room-1')" class="px-3.5 py-2 rounded-xl bg-[#263c32] text-[#f5f0e7] text-xs font-medium hover:bg-[#344f42] transition">
+              دیکھیں &larr;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- APK Status & Cloud Workflow Card -->
+      <div class="bg-amber-50 border border-amber-200 rounded-3xl p-4.5 text-xs text-amber-900 space-y-2.5">
+        <div class="flex items-center gap-2 font-bold text-amber-800">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#a57c42]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span data-key="apk_ready_heading">APK بلڈ اور ڈاؤن لوڈ کی تیاری</span>
+        </div>
+        <p class="leading-relaxed" data-key="apk_ready_desc">
+          پروجیکٹ کی GitHub Actions ورک فلو فائل <code class="bg-amber-100 px-1 py-0.5 rounded font-mono text-[11px]">.github/workflows/android-apk.yml</code> مکمل طور پر خودکار بنا دی گئی ہے۔ جیسے ہی آپ یہ کوڈ GitHub پر پش کریں گے، کلاؤڈ رنر خود بخود <strong class="text-[#263c32]">app-debug.apk</strong> بلڈ کر دے گا!
+        </p>
+        <button onclick="openModal('apk-modal')" class="mt-1 w-full py-2 px-3 rounded-xl bg-[#a57c42] text-white font-medium text-xs hover:bg-[#8f6834] transition flex items-center justify-center gap-1.5">
+          <span>APK ڈاؤن لوڈ گائیڈ دیکھیں</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- TAB 2: MY ROOMS (List) -->
+    <div id="tab-rooms" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="serif-title text-2xl text-[#263c32]" data-key="my_rooms_title">میرے کمرے</h2>
+          <p class="text-xs text-[#706e64]" data-key="my_rooms_sub">آپ کے بنائے گئے تمام ڈیزائنز</p>
+        </div>
+        <button onclick="openNewRoomModal()" class="w-9 h-9 rounded-xl bg-[#263c32] text-white flex items-center justify-center shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+      </div>
+
+      <!-- Room Cards List -->
+      <div class="space-y-3" id="rooms-list-container">
+        <!-- Room 1 -->
+        <div class="bg-[#fcfaf6] border border-[#ddd7cb] rounded-2xl p-3 flex gap-3 cursor-pointer hover:border-[#a57c42] transition" onclick="viewRoomDetail('room-1')">
+          <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=300&q=80" class="w-24 h-24 rounded-xl object-cover" alt="Living Room">
+          <div class="flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">تیار ہے</span>
+                <span class="text-[11px] text-[#706e64]">آج</span>
+              </div>
+              <h4 class="font-bold text-sm text-[#263c32] mt-1">مین لیونگ روم</h4>
+              <p class="text-xs text-[#706e64]">Modern vintage • پاکستان</p>
+            </div>
+            <div class="flex items-center justify-between text-xs text-[#a57c42] font-semibold">
+              <span>4 فرنیچر لنکس</span>
+              <span>دیکھیں &larr;</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room 2 (Bed Room) -->
+        <div class="bg-[#fcfaf6] border border-[#ddd7cb] rounded-2xl p-3 flex gap-3 cursor-pointer hover:border-[#a57c42] transition" onclick="viewRoomDetail('room-2')">
+          <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=300&q=80" class="w-24 h-24 rounded-xl object-cover" alt="Bedroom">
+          <div class="flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">تیار ہے</span>
+                <span class="text-[11px] text-[#706e64]">کل</span>
+              </div>
+              <h4 class="font-bold text-sm text-[#263c32] mt-1">ماسٹر بیڈ روم</h4>
+              <p class="text-xs text-[#706e64]">Japandi • پاکستان</p>
+            </div>
+            <div class="flex items-center justify-between text-xs text-[#a57c42] font-semibold">
+              <span>3 فرنیچر لنکس</span>
+              <span>دیکھیں &larr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SAVED (Favorites) -->
+    <div id="tab-saved" class="hidden space-y-4">
+      <h2 class="serif-title text-2xl text-[#263c32]" data-key="saved_title">پسندیدہ ڈیزائنز</h2>
+      <p class="text-xs text-[#706e64]" data-key="saved_sub">محفوظ کیے گئے ڈیزائنز اور خریداری لنکس</p>
+      
+      <div class="bg-[#fcfaf6] border border-[#ddd7cb] rounded-2xl p-6 text-center space-y-3">
+        <div class="w-12 h-12 rounded-full bg-[#a57c42]/10 text-[#a57c42] flex items-center justify-center mx-auto">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <h4 class="font-bold text-sm text-[#263c32]" data-key="saved_room_title">مین لیونگ روم بک مارک ہے</h4>
+        <p class="text-xs text-[#706e64]" data-key="saved_room_desc">آپ کسی بھی ڈیزائن کو محفوظ کر کے بعد میں آسانی سے دیکھ سکتے ہیں۔</p>
+        <button onclick="viewRoomDetail('room-1')" class="py-2 px-4 rounded-xl bg-[#263c32] text-white text-xs font-medium">
+          ڈیزائن کھولیں
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW: ROOM DETAIL / BEFORE-AFTER & SHOPPING PINS -->
+    <div id="view-room-detail" class="hidden space-y-4">
+      
+      <!-- Back Bar -->
+      <div class="flex items-center justify-between pb-1 border-b border-[#ddd7cb]">
+        <button onclick="closeRoomDetail()" class="flex items-center gap-1.5 text-xs font-bold text-[#263c32] hover:text-[#a57c42] transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          <span data-key="back_to_rooms">واپس اسٹوڈیو</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">Ready</span>
+          <button onclick="alert('پسندیدہ فہرست میں شامل کر دیا گیا!')" class="p-1.5 rounded-lg border border-[#ddd7cb] text-[#a57c42] hover:bg-white transition" title="Save">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Room Header Info -->
+      <div>
+        <div class="flex gap-2 mb-1">
+          <span id="detail-tag-style" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#263c32]/10 text-[#263c32]">Modern Vintage</span>
+          <span id="detail-tag-type" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#a57c42]/10 text-[#a57c42]">Living Room</span>
+        </div>
+        <h2 id="detail-title" class="serif-title text-2xl text-[#263c32]">مین لیونگ روم — نیا ڈیزائن</h2>
+      </div>
+
+      <!-- Before / After Switcher Tabs -->
+      <div class="bg-white/80 p-1 rounded-2xl border border-[#ddd7cb] flex items-center justify-between gap-1 shadow-sm">
+        <button id="btn-show-after" onclick="setImageMode('after')" class="flex-1 py-2 rounded-xl bg-[#263c32] text-white text-xs font-semibold transition">
+          بعد میں (نیا AI ڈیزائن ✨)
+        </button>
+        <button id="btn-show-before" onclick="setImageMode('before')" class="flex-1 py-2 rounded-xl text-[#706e64] hover:text-[#263c32] text-xs font-semibold transition">
+          پہلے (اصل تصویر)
+        </button>
+        <button id="toggle-pins-btn" onclick="toggleHotspotPins()" class="px-3 py-2 rounded-xl border border-[#ddd7cb] text-[#a57c42] text-xs font-bold transition flex items-center gap-1" title="Toggle Pins">
+          <span>📍</span>
+        </button>
+      </div>
+
+      <!-- Interactive Image Stage with Pins -->
+      <div class="relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-[#ddd7cb] bg-neutral-900 shadow-md">
+        <!-- Image Element -->
+        <img id="detail-image" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80" alt="Room View" class="w-full h-full object-cover transition duration-300">
+
+        <!-- Pins Layer (Shown only in After mode) -->
+        <div id="pins-overlay" class="absolute inset-0">
+          
+          <!-- Pin 1: Sofa -->
+          <div style="top: 55%; left: 45%;" class="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group" onclick="showProductDrawer('sofa')">
+            <div class="w-8 h-8 rounded-full bg-[#f5f0e7] border-2 border-[#263c32] text-[#263c32] font-black text-xs flex items-center justify-center shadow-lg pin-active group-hover:scale-110 transition">
+              1
+            </div>
+            <div class="hidden group-hover:block absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#263c32] text-white text-[11px] px-2 py-1 rounded-md shadow-md z-30">
+              Olive Linen Sofa
+            </div>
+          </div>
+
+          <!-- Pin 2: Brass Lamp -->
+          <div style="top: 35%; left: 82%;" class="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group" onclick="showProductDrawer('lamp')">
+            <div class="w-8 h-8 rounded-full bg-[#f5f0e7] border-2 border-[#263c32] text-[#263c32] font-black text-xs flex items-center justify-center shadow-lg pin-active group-hover:scale-110 transition">
+              2
+            </div>
+            <div class="hidden group-hover:block absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#263c32] text-white text-[11px] px-2 py-1 rounded-md shadow-md z-30">
+              Vintage Brass Floor Lamp
+            </div>
+          </div>
+
+          <!-- Pin 3: Coffee Table -->
+          <div style="top: 72%; left: 48%;" class="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group" onclick="showProductDrawer('table')">
+            <div class="w-8 h-8 rounded-full bg-[#f5f0e7] border-2 border-[#263c32] text-[#263c32] font-black text-xs flex items-center justify-center shadow-lg pin-active group-hover:scale-110 transition">
+              3
+            </div>
+            <div class="hidden group-hover:block absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#263c32] text-white text-[11px] px-2 py-1 rounded-md shadow-md z-30">
+              Fluted Walnut Table
+            </div>
+          </div>
+
+          <!-- Pin 4: Ceramic Decor -->
+          <div style="top: 66%; left: 28%;" class="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group" onclick="showProductDrawer('vase')">
+            <div class="w-8 h-8 rounded-full bg-[#f5f0e7] border-2 border-[#263c32] text-[#263c32] font-black text-xs flex items-center justify-center shadow-lg pin-active group-hover:scale-110 transition">
+              4
+            </div>
+            <div class="hidden group-hover:block absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#263c32] text-white text-[11px] px-2 py-1 rounded-md shadow-md z-30">
+              Textured Ceramic Vase
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <p class="text-center text-xs text-[#706e64]" data-key="pin_hint">
+        تصویر میں موجود کسی بھی نمبر (1-4) پر کلک کر کے خریداری کے لنکس دیکھیں
+      </p>
+
+      <!-- Shoppable Items List -->
+      <div class="space-y-2 pt-2">
+        <h3 class="serif-title text-lg text-[#263c32]" data-key="items_detected_title">پہچانی گئی اشیا (4)</h3>
+        
+        <div class="grid grid-cols-1 gap-2">
+          
+          <div onclick="showProductDrawer('sofa')" class="p-3 bg-white/70 border border-[#ddd7cb] rounded-2xl flex items-center justify-between cursor-pointer hover:border-[#a57c42] transition">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-[#263c32] text-white text-xs font-bold flex items-center justify-center">1</span>
+              <div>
+                <h5 class="text-xs font-bold text-[#263c32]">Olive Linen 3-Seater Sofa</h5>
+                <p class="text-[11px] text-[#706e64]">فرنیچر • صوفہ</p>
+              </div>
+            </div>
+            <span class="text-xs text-[#a57c42] font-semibold">خریداری لنکس &larr;</span>
+          </div>
+
+          <div onclick="showProductDrawer('lamp')" class="p-3 bg-white/70 border border-[#ddd7cb] rounded-2xl flex items-center justify-between cursor-pointer hover:border-[#a57c42] transition">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-[#263c32] text-white text-xs font-bold flex items-center justify-center">2</span>
+              <div>
+                <h5 class="text-xs font-bold text-[#263c32]">Vintage Brass Arch Floor Lamp</h5>
+                <p class="text-[11px] text-[#706e64]">لائٹنگ • لیمپ</p>
+              </div>
+            </div>
+            <span class="text-xs text-[#a57c42] font-semibold">خریداری لنکس &larr;</span>
+          </div>
+
+          <div onclick="showProductDrawer('table')" class="p-3 bg-white/70 border border-[#ddd7cb] rounded-2xl flex items-center justify-between cursor-pointer hover:border-[#a57c42] transition">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-[#263c32] text-white text-xs font-bold flex items-center justify-center">3</span>
+              <div>
+                <h5 class="text-xs font-bold text-[#263c32]">Fluted Walnut Coffee Table</h5>
+                <p class="text-[11px] text-[#706e64]">فرنیچر • میز</p>
+              </div>
+            </div>
+            <span class="text-xs text-[#a57c42] font-semibold">خریداری لنکس &larr;</span>
+          </div>
+
+          <div onclick="showProductDrawer('vase')" class="p-3 bg-white/70 border border-[#ddd7cb] rounded-2xl flex items-center justify-between cursor-pointer hover:border-[#a57c42] transition">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-[#263c32] text-white text-xs font-bold flex items-center justify-center">4</span>
+              <div>
+                <h5 class="text-xs font-bold text-[#263c32]">Handcrafted Ceramic Ribbed Vase</h5>
+                <p class="text-[11px] text-[#706e64]">ڈیکوریشن • گلدان</p>
+              </div>
+            </div>
+            <span class="text-xs text-[#a57c42] font-semibold">خریداری لنکس &larr;</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation Bar (Flutter NavigationBar Replica) -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-[460px] mx-auto bg-[#f5f0e7]/95 backdrop-blur-md border-t border-[#ddd7cb] px-6 py-2 flex justify-around items-center z-40">
+    
+    <button onclick="switchTab('studio')" id="nav-studio" class="flex flex-col items-center gap-1 text-[#263c32] font-bold text-xs py-1">
+      <div class="w-10 h-7 rounded-xl bg-[#263c32]/10 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#263c32]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6.1 4.5 2.3 7.1-6.2-4.6-6.2 4.6 2.3-7.1-6.1-4.5h7.6z"/></svg>
+      </div>
+      <span data-key="nav_studio">اسٹوڈیو</span>
+    </button>
+
+    <button onclick="switchTab('rooms')" id="nav-rooms" class="flex flex-col items-center gap-1 text-[#706e64] hover:text-[#263c32] text-xs py-1">
+      <div class="w-10 h-7 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+      </div>
+      <span data-key="nav_rooms">میرے کمرے</span>
+    </button>
+
+    <button onclick="switchTab('saved')" id="nav-saved" class="flex flex-col items-center gap-1 text-[#706e64] hover:text-[#263c32] text-xs py-1">
+      <div class="w-10 h-7 rounded-xl flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+      </div>
+      <span data-key="nav_saved">پسندیدہ</span>
+    </button>
+
+  </nav>
+
+</div>
+
+<!-- MODAL: NEW ROOM STUDIO (Create Room Form) -->
+<div id="new-room-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-[#f5f0e7] w-full max-w-[460px] rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto p-6 space-y-5 border border-[#ddd7cb] shadow-2xl">
+    <div class="flex items-center justify-between pb-2 border-b border-[#ddd7cb]">
+      <h3 class="serif-title text-2xl text-[#263c32]" data-key="new_room_title">ایک نیا انداز تخلیق کریں</h3>
+      <button onclick="closeModal('new-room-modal')" class="p-1.5 rounded-full hover:bg-black/10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#263c32]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Step 1: Photo selection -->
+    <div class="space-y-2">
+      <label class="block text-xs font-bold text-[#263c32]">1۔ کمرے کی تصویر منتخب کریں</label>
+      <div class="grid grid-cols-3 gap-2">
+        <div onclick="selectSamplePhoto(1, this)" class="sample-photo-box p-1 rounded-2xl border-2 border-[#a57c42] bg-white cursor-pointer overflow-hidden text-center">
+          <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=300&q=80" class="h-16 w-full object-cover rounded-xl mb-1">
+          <span class="text-[10px] font-semibold text-[#263c32]">لیونگ روم</span>
+        </div>
+        <div onclick="selectSamplePhoto(2, this)" class="sample-photo-box p-1 rounded-2xl border border-[#ddd7cb] bg-white cursor-pointer overflow-hidden text-center opacity-70 hover:opacity-100">
+          <img src="https://images.unsplash.com/photo-1540518614846-7ede433c4ef5?auto=format&fit=crop&w=300&q=80" class="h-16 w-full object-cover rounded-xl mb-1">
+          <span class="text-[10px] font-semibold text-[#263c32]">بیڈ روم</span>
+        </div>
+        <div onclick="selectSamplePhoto(3, this)" class="sample-photo-box p-1 rounded-2xl border border-[#ddd7cb] bg-white cursor-pointer overflow-hidden text-center opacity-70 hover:opacity-100">
+          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=300&q=80" class="h-16 w-full object-cover rounded-xl mb-1">
+          <span class="text-[10px] font-semibold text-[#263c32]">ہوم آفس</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Room Type -->
+    <div class="space-y-1">
+      <label class="block text-xs font-bold text-[#263c32]">2۔ کمرے کی قسم (Room Type)</label>
+      <select id="select-room-type" class="w-full p-3 rounded-xl border border-[#ddd7cb] bg-white text-xs font-semibold text-[#263c32] focus:outline-none focus:border-[#a57c42]">
+        <option value="Living room">Living room (لیونگ روم)</option>
+        <option value="Bedroom">Bedroom (بیڈ روم)</option>
+        <option value="Gaming studio">Gaming studio (گیمنگ اسٹوڈیو)</option>
+        <option value="Hall">Hall (ہال)</option>
+        <option value="Office">Office (ہوم آفس)</option>
+        <option value="Dining room">Dining room (ڈائننگ روم)</option>
+      </select>
+    </div>
+
+    <!-- Step 3: Style Selection -->
+    <div class="space-y-1">
+      <label class="block text-xs font-bold text-[#263c32]">3۔ ڈیزائن کا انداز (Style)</label>
+      <select id="select-style" class="w-full p-3 rounded-xl border border-[#ddd7cb] bg-white text-xs font-semibold text-[#263c32] focus:outline-none focus:border-[#a57c42]">
+        <option value="Modern vintage">Modern vintage (ماڈرن ونٹیج)</option>
+        <option value="Minimal">Minimal (سادہ اور نفاست)</option>
+        <option value="Japandi">Japandi (جاپانی اور اسکینڈینیوین)</option>
+        <option value="Industrial">Industrial (انڈسٹریل)</option>
+        <option value="Bohemian">Bohemian (بوہیمین)</option>
+        <option value="Luxury">Luxury (شاہانہ)</option>
+      </select>
+    </div>
+
+    <!-- Step 4: Brief Description -->
+    <div class="space-y-1">
+      <label class="block text-xs font-bold text-[#263c32]">4۔ آپ کی ذاتی ہدایات (Brief)</label>
+      <textarea id="input-brief" rows="2" class="w-full p-3 rounded-xl border border-[#ddd7cb] bg-white text-xs text-[#263c32] focus:outline-none focus:border-[#a57c42]" placeholder="مثلاً: لکڑی کا گرم فرنیچر، ہلکی قدرتی روشنی اور پودے شامل کریں۔">Warm wooden furniture, warm lighting, natural plants and cozy atmosphere.</textarea>
+    </div>
+
+    <!-- Step 5: Country -->
+    <div class="space-y-1">
+      <label class="block text-xs font-bold text-[#263c32]">5۔ مارکیٹ ملک (Shopping Country)</label>
+      <select id="select-country" class="w-full p-3 rounded-xl border border-[#ddd7cb] bg-white text-xs font-semibold text-[#263c32]">
+        <option value="pk">Pakistan (پاکستان — Daraz / Google Shopping)</option>
+        <option value="ae">UAE (متحدہ عرب امارات — Amazon.ae)</option>
+        <option value="us">United States (امریکا — Amazon.com)</option>
+        <option value="gb">United Kingdom (برطانیہ — Amazon.co.uk)</option>
+        <option value="in">India (بھارت — Amazon.in)</option>
+      </select>
+    </div>
+
+    <!-- Generate Simulation Button -->
+    <button onclick="startAiSimulation()" id="start-generate-btn" class="w-full py-3.5 px-4 rounded-2xl bg-[#263c32] hover:bg-[#324f42] text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#a57c42]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4h7.6l-6.1 4.5 2.3 7.1-6.2-4.6-6.2 4.6 2.3-7.1-6.1-4.5h7.6z"/></svg>
+      <span>AI ری ڈیزائن شروع کریں</span>
+    </button>
+
+    <!-- Simulation Progress Container -->
+    <div id="sim-progress-box" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
+      <div class="flex items-center justify-between text-xs font-bold text-amber-900">
+        <span id="sim-step-text">Gemini 3.1 Flash Image کے ذریعے کمرہ ڈیزائن ہو رہا ہے…</span>
+        <span class="animate-spin text-amber-700">⏳</span>
+      </div>
+      <div class="w-full h-2 rounded-full bg-amber-200 overflow-hidden">
+        <div id="sim-progress-bar" class="h-full bg-[#a57c42] w-1/4 transition-all duration-700"></div>
+      </div>
+      <p class="text-[11px] text-amber-700">خریداری کے ہاٹ اسپاٹس اور اشیا کی فہرست تیار ہو رہی ہے…</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: PRODUCT DETAIL & SHOPPING DRAWER -->
+<div id="product-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-[#f5f0e7] w-full max-w-[460px] rounded-t-3xl sm:rounded-3xl p-6 space-y-4 border border-[#ddd7cb] shadow-2xl">
+    <div class="flex items-center justify-between pb-2 border-b border-[#ddd7cb]">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-[#a57c42] tracking-wider" id="prod-category">FURNITURE</span>
+        <h3 class="serif-title text-xl text-[#263c32]" id="prod-title">Olive Linen 3-Seater Sofa</h3>
+      </div>
+      <button onclick="closeModal('product-modal')" class="p-1.5 rounded-full hover:bg-black/10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#263c32]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="space-y-3">
+      <div class="p-3 bg-white/80 rounded-2xl border border-[#ddd7cb]">
+        <p class="text-xs text-[#706e64] mb-1">تخمینہ قیمت (Estimated Price):</p>
+        <p class="text-lg font-bold text-[#263c32]" id="prod-price">PKR 75,000 - 95,000</p>
+      </div>
+
+      <div class="space-y-2">
+        <p class="text-xs font-bold text-[#263c32]">براہ راست تلاش لنکس (Shopping Search):</p>
+        
+        <a id="prod-google-link" href="https://www.google.com/search?tbm=shop&q=olive+linen+sofa" target="_blank" class="p-3 bg-white hover:bg-neutral-50 rounded-xl border border-[#ddd7cb] flex items-center justify-between text-xs font-semibold text-[#263c32] transition">
+          <span class="flex items-center gap-2">
+            <span class="text-amber-600">🔍</span>
+            <span>Google Shopping پر تلاش کریں</span>
+          </span>
+          <span>&larr;</span>
+        </a>
+
+        <a id="prod-daraz-link" href="https://www.daraz.pk/catalog/?q=olive+sofa" target="_blank" class="p-3 bg-white hover:bg-neutral-50 rounded-xl border border-[#ddd7cb] flex items-center justify-between text-xs font-semibold text-[#263c32] transition">
+          <span class="flex items-center gap-2">
+            <span class="text-orange-600">🛍️</span>
+            <span>Daraz.pk پر تلاش کریں</span>
+          </span>
+          <span>&larr;</span>
+        </a>
+
+        <a id="prod-amazon-link" href="https://www.amazon.com/s?k=olive+linen+sofa" target="_blank" class="p-3 bg-white hover:bg-neutral-50 rounded-xl border border-[#ddd7cb] flex items-center justify-between text-xs font-semibold text-[#263c32] transition">
+          <span class="flex items-center gap-2">
+            <span class="text-blue-600">🌐</span>
+            <span>Amazon پر تلاش کریں</span>
+          </span>
+          <span>&larr;</span>
+        </a>
+      </div>
+    </div>
+
+    <button onclick="closeModal('product-modal')" class="w-full py-2.5 rounded-xl bg-[#263c32] text-white text-xs font-bold">
+      بند کریں
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: APK BUILD GUIDE -->
+<div id="apk-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-[#f5f0e7] w-full max-w-[460px] rounded-t-3xl sm:rounded-3xl p-6 space-y-4 border border-[#ddd7cb] shadow-2xl">
+    <div class="flex items-center justify-between pb-2 border-b border-[#ddd7cb]">
+      <h3 class="serif-title text-xl text-[#263c32]">APK تیار کرنے کا آسان طریقہ</h3>
+      <button onclick="closeModal('apk-modal')" class="p-1.5 rounded-full hover:bg-black/10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#263c32]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="space-y-3 text-xs leading-relaxed text-[#263c32]">
+      <div class="p-3 bg-white/80 rounded-2xl border border-[#ddd7cb] space-y-1">
+        <strong class="text-[#a57c42]">قدم 1: GitHub پر اپ لوڈ کریں</strong>
+        <p class="text-[#706e64]">
+          یہ سارا پروجیکٹ (بشمول <code class="font-mono text-[11px]">.github</code> فولڈر) اپنے GitHub اکاؤنٹ کی نئی repository میں ڈالیں۔
+        </p>
+      </div>
+
+      <div class="p-3 bg-white/80 rounded-2xl border border-[#ddd7cb] space-y-1">
+        <strong class="text-[#a57c42]">قدم 2: خودکار بلڈ شروع ہو جائے گا</strong>
+        <p class="text-[#706e64]">
+          ہم نے ورک فلو اپ ڈیٹ کر دیا ہے۔ جیسے ہی آپ کوڈ پش کریں گے، یا GitHub میں <strong>Actions &rarr; Build Android APK &rarr; Run workflow</strong> دبائیں گے، کلاؤڈ سرورز پر بلڈ چل پڑے گا۔
+        </p>
+      </div>
+
+      <div class="p-3 bg-white/80 rounded-2xl border border-[#ddd7cb] space-y-1">
+        <strong class="text-[#a57c42]">قدم 3: APK ڈاؤن لوڈ کریں</strong>
+        <p class="text-[#706e64]">
+          کامیاب ہونے کے بعد اسی صفحے کے <strong>Artifacts</strong> سے <code class="font-mono text-[11px]">Reverie-Android-Debug</code> ڈاؤن لوڈ کر کے موبائل میں انسٹال کریں۔
+        </p>
+      </div>
+    </div>
+
+    <button onclick="closeModal('apk-modal')" class="w-full py-2.5 rounded-xl bg-[#263c32] text-white text-xs font-bold">
+      سمجھ گیا
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: ACCOUNT & BACKEND STATUS -->
+<div id="account-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-[#f5f0e7] w-full max-w-[460px] rounded-t-3xl sm:rounded-3xl p-6 space-y-4 border border-[#ddd7cb] shadow-2xl">
+    <div class="flex items-center justify-between pb-2 border-b border-[#ddd7cb]">
+      <h3 class="serif-title text-xl text-[#263c32]">اسٹوڈیو اور بیک اینڈ کنکشن</h3>
+      <button onclick="closeModal('account-modal')" class="p-1.5 rounded-full hover:bg-black/10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#263c32]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="space-y-3 text-xs">
+      <div class="p-3 bg-white/80 rounded-2xl border border-[#ddd7cb] space-y-1">
+        <p class="font-bold text-[#263c32]">Supabase Project:</p>
+        <p class="font-mono text-[11px] text-emerald-700 break-all">https://uwmguhpoxwjpidqoknku.supabase.co</p>
+        <div class="flex items-center gap-1.5 pt-1 text-emerald-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span class="font-semibold">Auth سرور فعال ہے (HTTP 200)</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-white/80 rounded-2xl border border-[#ddd7cb] space-y-1">
+        <p class="font-bold text-[#263c32]">Public Publishable Key:</p>
+        <p class="font-mono text-[11px] text-[#706e64] break-all">sb_publishable_81OE7HDu1OFDMhPff7zr3A_Tsi_ggO9</p>
+      </div>
+
+      <div class="p-3 bg-white/80 rounded-2xl border border-[#ddd7cb] space-y-1">
+        <p class="font-bold text-[#263c32]">AI ماڈلز:</p>
+        <p class="text-[#706e64]">Gemini 3.1 Flash Image (ڈیزائن) + Gemini 3.8 Flash (آبجیکٹ ڈیٹیکشن)</p>
+      </div>
+    </div>
+
+    <button onclick="closeModal('account-modal')" class="w-full py-2.5 rounded-xl bg-[#263c32] text-white text-xs font-bold">
+      بند کریں
+    </button>
+  </div>
+</div>
+
+<script>
+  let currentLang = 'ur';
+  let currentImageMode = 'after';
+  let pinsVisible = true;
+  let activeRoom = 'room-1';
+
+  const translations = {
+    ur: {
+      langLabel: 'English',
+      dir: 'rtl',
+      studio_subtitle: 'انٹیریئر ڈیزائن اسٹوڈیو',
+      studio_title: 'اپنی جگہ کو<br><span class="italic text-[#a57c42]">نیا روپ دیں۔</span>',
+      studio_desc: 'آپ کے کمرے کی تصویر سے، جدید AI کے ذریعے حقیقت پسندانہ خوبصورت ڈیزائن۔',
+      cta_heading: 'نیا ڈیزائن بنائیں',
+      cta_sub: 'تصویر اپ لوڈ کریں، پسندیدہ اسٹائل منتخب کریں اور پلک جھپکتے ہی خریداری کے لنکس حاصل کریں۔',
+      reimagine_btn: 'میرے کمرے کا ڈیزائن بنائیں',
+      step_1: 'تصویر دیں',
+      step_2: 'انداز چنیں',
+      step_3: 'خریداری کریں',
+      recent_designs_title: 'حالیہ ڈیزائنز (ڈیمو)',
+      status_ready: 'تیار ہے',
+      apk_ready_heading: 'APK بلڈ اور ڈاؤن لوڈ کی تیاری',
+      apk_ready_desc: 'پروجیکٹ کی GitHub Actions ورک فلو فائل .github/workflows/android-apk.yml مکمل طور پر خودکار بنا دی گئی ہے۔ جیسے ہی آپ یہ کوڈ GitHub پر پش کریں گے، کلاؤڈ رنر خود بخود app-debug.apk بلڈ کر دے گا!',
+      my_rooms_title: 'میرے کمرے',
+      my_rooms_sub: 'آپ کے بنائے گئے تمام ڈیزائنز',
+      saved_title: 'پسندیدہ ڈیزائنز',
+      saved_sub: 'محفوظ کیے گئے ڈیزائنز اور خریداری لنکس',
+      nav_studio: 'اسٹوڈیو',
+      nav_rooms: 'میرے کمرے',
+      nav_saved: 'پسندیدہ',
+      back_to_rooms: 'واپس اسٹوڈیو',
+      pin_hint: 'تصویر میں موجود کسی بھی نمبر (1-4) پر کلک کر کے خریداری کے لنکس دیکھیں',
+      items_detected_title: 'پہچانی گئی اشیا (4)'
+    },
+    en: {
+      langLabel: 'اردو',
+      dir: 'ltr',
+      studio_subtitle: 'THE INTERIOR STUDIO',
+      studio_title: 'Make room<br><span class="italic text-[#a57c42]">for possibility.</span>',
+      studio_desc: 'A little inspiration. A space that feels like you with real AI design.',
+      cta_heading: 'Reimagine my room',
+      cta_sub: 'Upload a room photo, choose an aesthetic, and shop detected furniture pieces.',
+      reimagine_btn: 'Reimagine my room',
+      step_1: 'Add photo',
+      step_2: 'Choose style',
+      step_3: 'Shop details',
+      recent_designs_title: 'Recent Designs (Demo)',
+      status_ready: 'Ready',
+      apk_ready_heading: 'APK Build & Download Automation',
+      apk_ready_desc: 'GitHub Actions workflow file .github/workflows/android-apk.yml is configured. Pushing to GitHub triggers an automated cloud build of app-debug.apk for free!',
+      my_rooms_title: 'My Rooms',
+      my_rooms_sub: 'All your customized interior projects',
+      saved_title: 'Saved Designs',
+      saved_sub: 'Bookmarks and shopping lists',
+      nav_studio: 'Studio',
+      nav_rooms: 'My rooms',
+      nav_saved: 'Saved',
+      back_to_rooms: 'Back to Studio',
+      pin_hint: 'Tap any numbered pin (1-4) on the image to shop details',
+      items_detected_title: 'Detected Items (4)'
+    }
+  };
+
+  const roomData = {
+    'room-1': {
+      titleUr: 'مین لیونگ روم — نیا ڈیزائن',
+      titleEn: 'Main Living Room — Redesigned',
+      style: 'Modern Vintage',
+      type: 'Living Room',
+      beforeImg: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80',
+      afterImg: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80'
+    },
+    'room-2': {
+      titleUr: 'ماسٹر بیڈ روم — جاپاندی انداز',
+      titleEn: 'Master Bedroom — Japandi Style',
+      style: 'Japandi',
+      type: 'Bedroom',
+      beforeImg: 'https://images.unsplash.com/photo-1540518614846-7ede433c4ef5?auto=format&fit=crop&w=900&q=80',
+      afterImg: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=80'
+    }
+  };
+
+  const products = {
+    sofa: {
+      category: 'FURNITURE',
+      title: 'Olive Linen 3-Seater Sofa',
+      price: 'PKR 75,000 - 95,000 / $420',
+      query: 'olive+linen+sofa'
+    },
+    lamp: {
+      category: 'LIGHTING',
+      title: 'Vintage Brass Arch Floor Lamp',
+      price: 'PKR 18,500 / $75',
+      query: 'vintage+brass+floor+lamp'
+    },
+    table: {
+      category: 'FURNITURE',
+      title: 'Fluted Walnut Coffee Table',
+      price: 'PKR 28,000 / $110',
+      query: 'fluted+walnut+coffee+table'
+    },
+    vase: {
+      category: 'DECOR',
+      title: 'Handcrafted Ribbed Ceramic Vase',
+      price: 'PKR 4,500 / $18',
+      query: 'ceramic+ribbed+vase'
+    }
+  };
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'ur' ? 'en' : 'ur';
+    const dict = translations[currentLang];
+    
+    document.getElementById('root-html').setAttribute('lang', currentLang);
+    document.getElementById('root-html').setAttribute('dir', dict.dir);
+    document.getElementById('lang-label').innerText = dict.langLabel;
+
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const key = el.getAttribute('data-key');
+      if (dict[key]) el.innerHTML = dict[key];
+    });
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tab-studio').classList.add('hidden');
+    document.getElementById('tab-rooms').classList.add('hidden');
+    document.getElementById('tab-saved').classList.add('hidden');
+    document.getElementById('view-room-detail').classList.add('hidden');
+
+    ['studio', 'rooms', 'saved'].forEach(t => {
+      const btn = document.getElementById('nav-' + t);
+      if (t === tab) {
+        btn.classList.add('text-[#263c32]', 'font-bold');
+        btn.classList.remove('text-[#706e64]');
+      } else {
+        btn.classList.remove('text-[#263c32]', 'font-bold');
+        btn.classList.add('text-[#706e64]');
+      }
+    });
+
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+  }
+
+  function viewRoomDetail(roomId) {
+    activeRoom = roomId;
+    const room = roomData[roomId];
+    
+    document.getElementById('tab-studio').classList.add('hidden');
+    document.getElementById('tab-rooms').classList.add('hidden');
+    document.getElementById('tab-saved').classList.add('hidden');
+    document.getElementById('view-room-detail').classList.remove('hidden');
+
+    document.getElementById('detail-title').innerText = currentLang === 'ur' ? room.titleUr : room.titleEn;
+    document.getElementById('detail-tag-style').innerText = room.style;
+    document.getElementById('detail-tag-type').innerText = room.type;
+
+    setImageMode('after');
+  }
+
+  function closeRoomDetail() {
+    document.getElementById('view-room-detail').classList.add('hidden');
+    switchTab('studio');
+  }
+
+  function setImageMode(mode) {
+    currentImageMode = mode;
+    const room = roomData[activeRoom];
+    const imgEl = document.getElementById('detail-image');
+    const pinsOverlay = document.getElementById('pins-overlay');
+    const btnAfter = document.getElementById('btn-show-after');
+    const btnBefore = document.getElementById('btn-show-before');
+
+    if (mode === 'after') {
+      imgEl.src = room.afterImg;
+      pinsOverlay.classList.remove('hidden');
+      btnAfter.className = 'flex-1 py-2 rounded-xl bg-[#263c32] text-white text-xs font-semibold transition';
+      btnBefore.className = 'flex-1 py-2 rounded-xl text-[#706e64] hover:text-[#263c32] text-xs font-semibold transition';
+    } else {
+      imgEl.src = room.beforeImg;
+      pinsOverlay.classList.add('hidden');
+      btnBefore.className = 'flex-1 py-2 rounded-xl bg-[#263c32] text-white text-xs font-semibold transition';
+      btnAfter.className = 'flex-1 py-2 rounded-xl text-[#706e64] hover:text-[#263c32] text-xs font-semibold transition';
+    }
+  }
+
+  function toggleHotspotPins() {
+    pinsVisible = !pinsVisible;
+    const overlay = document.getElementById('pins-overlay');
+    const btn = document.getElementById('toggle-pins-btn');
+    if (pinsVisible && currentImageMode === 'after') {
+      overlay.classList.remove('hidden');
+      btn.classList.add('text-[#a57c42]');
+      btn.classList.remove('text-neutral-400');
+    } else {
+      overlay.classList.add('hidden');
+      btn.classList.remove('text-[#a57c42]');
+      btn.classList.add('text-neutral-400');
+    }
+  }
+
+  function showProductDrawer(itemKey) {
+    const item = products[itemKey];
+    if (!item) return;
+
+    document.getElementById('prod-category').innerText = item.category;
+    document.getElementById('prod-title').innerText = item.title;
+    document.getElementById('prod-price').innerText = item.price;
+
+    document.getElementById('prod-google-link').href = `https://www.google.com/search?tbm=shop&q=${item.query}`;
+    document.getElementById('prod-daraz-link').href = `https://www.daraz.pk/catalog/?q=${item.query}`;
+    document.getElementById('prod-amazon-link').href = `https://www.amazon.com/s?k=${item.query}`;
+
+    openModal('product-modal');
+  }
+
+  function openNewRoomModal() {
+    openModal('new-room-modal');
+  }
+
+  function selectSamplePhoto(idx, element) {
+    document.querySelectorAll('.sample-photo-box').forEach(el => {
+      el.classList.remove('border-[#a57c42]', 'border-2', 'opacity-100');
+      el.classList.add('border-[#ddd7cb]', 'opacity-70');
+    });
+    element.classList.remove('opacity-70', 'border-[#ddd7cb]');
+    element.classList.add('border-[#a57c42]', 'border-2', 'opacity-100');
+  }
+
+  function startAiSimulation() {
+    const btn = document.getElementById('start-generate-btn');
+    const progressBox = document.getElementById('sim-progress-box');
+    const progressBar = document.getElementById('sim-progress-bar');
+    const stepText = document.getElementById('sim-step-text');
+
+    btn.disabled = true;
+    btn.classList.add('opacity-50');
+    progressBox.classList.remove('hidden');
+
+    progressBar.style.width = '25%';
+    stepText.innerText = 'تصویر کا جائزہ اور معماری ڈھانچہ محفوظ کیا جا رہا ہے…';
+
+    setTimeout(() => {
+      progressBar.style.width = '60%';
+      stepText.innerText = 'Gemini 3.1 Flash Image نیا کمرہ تخلیق کر رہا ہے…';
+    }, 1500);
+
+    setTimeout(() => {
+      progressBar.style.width = '85%';
+      stepText.innerText = 'Gemini 3.8 Flash فرنیچر اور ڈیکور کے ہاٹ اسپاٹس تلاش کر رہا ہے…';
+    }, 3000);
+
+    setTimeout(() => {
+      progressBar.style.width = '100%';
+      stepText.innerText = 'ڈیزائن مکمل ہو گیا!';
+    }, 4200);
+
+    setTimeout(() => {
+      closeModal('new-room-modal');
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+      progressBox.classList.add('hidden');
+      viewRoomDetail('room-1');
+    }, 4900);
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+  }
+</script>
+
+</body>
+</html>

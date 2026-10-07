@@ -1,0 +1,6 @@
+project_id = "reverie"
+[functions.design-api]
+# Every request is verified using auth.getUser inside the handler.
+verify_jwt = false
+[edge_runtime]
+policy = "per_worker"

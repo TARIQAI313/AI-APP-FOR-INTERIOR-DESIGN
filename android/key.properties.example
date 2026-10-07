@@ -1,0 +1,5 @@
+# Copy to key.properties locally before a production release. Never commit the real file.
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=upload
+storeFile=/absolute/path/to/your-upload-key.jks
