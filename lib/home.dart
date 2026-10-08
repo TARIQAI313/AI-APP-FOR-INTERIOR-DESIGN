@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -445,18 +446,29 @@ class _RoomThumbnailState extends State<RoomThumbnail> {
   @override
   Widget build(BuildContext context) => FutureBuilder<String>(
     future: url,
-    builder: (c, s) => s.hasData
-        ? Image.network(
-            s.data!,
+    builder: (c, s) {
+      if (s.hasData) {
+        if (s.data!.startsWith('data:')) {
+          return Image.memory(
+            base64Decode(s.data!.split(',').last),
             fit: BoxFit.cover,
             errorBuilder: (_, e, st) =>
                 const Center(child: Icon(Icons.image_not_supported_outlined)),
-          )
-        : Center(
-            child: s.hasError
-                ? const Icon(Icons.image_not_supported_outlined)
-                : const CircularProgressIndicator(strokeWidth: 2),
-          ),
+          );
+        }
+        return Image.network(
+          s.data!,
+          fit: BoxFit.cover,
+          errorBuilder: (_, e, st) =>
+              const Center(child: Icon(Icons.image_not_supported_outlined)),
+        );
+      }
+      return Center(
+        child: s.hasError
+            ? const Icon(Icons.image_not_supported_outlined)
+            : const CircularProgressIndicator(strokeWidth: 2),
+      );
+    },
   );
 }
 

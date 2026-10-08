@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -491,9 +493,10 @@ class _PhotoStageState extends State<PhotoStage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (stream == null) {
-      stream = NetworkImage(
-        widget.url,
-      ).resolve(createLocalImageConfiguration(context));
+      final ImageProvider provider = widget.url.startsWith('data:')
+          ? MemoryImage(base64Decode(widget.url.split(',').last))
+          : NetworkImage(widget.url) as ImageProvider;
+      stream = provider.resolve(createLocalImageConfiguration(context));
       listener = ImageStreamListener((info, sync) {
         if (mounted) {
           setState(() => ratio = info.image.width / info.image.height);
@@ -543,13 +546,21 @@ class _PhotoStageState extends State<PhotoStage> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(
-                  widget.url,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, e, s) => Center(
-                    child: Text(t('Photo unavailable', 'تصویر دستیاب نہیں')),
-                  ),
-                ),
+                widget.url.startsWith('data:')
+                    ? Image.memory(
+                        base64Decode(widget.url.split(',').last),
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, e, s) => Center(
+                          child: Text(t('Photo unavailable', 'تصویر دستیاب نہیں')),
+                        ),
+                      )
+                    : Image.network(
+                        widget.url,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, e, s) => Center(
+                          child: Text(t('Photo unavailable', 'تصویر دستیاب نہیں')),
+                        ),
+                      ),
                 if (widget.pins)
                   ...widget.items.indexed.map(
                     (pair) => Positioned(
